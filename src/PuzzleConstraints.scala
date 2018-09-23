@@ -59,13 +59,17 @@ object PuzzleConstraints {
   // and somewhere ahead of the Black car.
   def c18: CNF = ???
 
+  // The White car is somewhere behind the Honda,
+  // and somewhere ahead of the Blue car.
+  def c19: CNF = ???
+
   /**
    * Conjunction of all 18 constraints derived from the puzzle hints.
    */
   def constraints: CNF =
     ( c01 and c02 and c03 and c04 and c05 and c06
       and c07 and c08 and c09 and c10 and c11 and c12
-      and c13 and c14 and c15 and c16 and c17 and c18 )
+      and c13 and c14 and c15 and c16 and c17 and c18 and c19)
 
   /**
    * Solution to the puzzle given the constraints above.
