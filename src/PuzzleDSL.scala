@@ -5,7 +5,7 @@ abstract class CNF {
   /**
    * Logical AND operator for combining two CNF statements.
    */
-  def and(that: CNF): CNF = ???
+  def and(that: CNF): CNF = Conj(this, that)
 }
 
 /**
@@ -20,7 +20,7 @@ abstract class Clause extends CNF {
   /**
    * Logical OR operator for combining two disjunctive clauses.
    */
-  def or(that: Clause) = ???
+  def or(that: Clause) = Disj(this, that)
 }
 
 /**
@@ -43,12 +43,12 @@ abstract class Literal extends Clause {
    * Material implication operator for a literal.
    * The consequence maybe a literal or any other Clause.
    */
-  def implies(that: Clause): Clause = ???
+  def implies(that: Clause): Clause = Disj(this.negated, that)
 
   /**
    * Material biconditional operator for two literals.
    */
-  def iff(that: Literal): CNF = ???
+  def iff(that: Literal): CNF = Conj(this.implies(that), that.implies(this))
 
   /**
    * Returns the negated form of this literal.
@@ -58,7 +58,10 @@ abstract class Literal extends Clause {
    */
   def negated: Literal = {
     // Hint: Use a match expression. The `symbol` method may help too.
-    ???
+    this match {
+      case Not(this.symbol) => this.symbol
+      case _ => Not(this.symbol)
+    }
   }
 
   /**
@@ -67,7 +70,10 @@ abstract class Literal extends Clause {
    */
   def truth: Boolean = {
     // Hint: Use a match expression.
-    ???
+    this match {
+      case Not(this.symbol) => false
+      case _ => true
+    }
   }
 }
 
