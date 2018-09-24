@@ -122,15 +122,71 @@ case class PuzzleDSLTest(name: String) extends TestCase(name) {
   }
 
   def testAttrImpliesAt(): Unit = {
+    val x = Sym(First, Blue)
+    val y = Sym(First, Texas)
 
+    // True ==> True
+    val tt = x and y and Blue.impliesAt(First, Texas)
+    val ttMaybeSolution = PuzzleSolver.findSolutionAssignments(tt)
+    assertTrue("True impliesAt True is valid", ttMaybeSolution.nonEmpty)
+
+    // True ==> y
+    val ty = x and Blue.impliesAt(First, Texas)
+    val tyMaybeSolution = PuzzleSolver.findSolutionAssignments(ty)
+    assertTrue("True impliesAt y is valid", tyMaybeSolution.nonEmpty)
+    val tySolution = tyMaybeSolution.get
+    assertTrue("True impliesAt y forces y to true", tySolution contains (y->true))
   }
 
   def testAttrImplies(): Unit = {
+    val blackFirst = Sym(First, Black)
+    val texasFirst = Sym(First, Texas)
 
+
+    // Black implies Texas and Black is at First
+    val cnf1 = (Black implies Texas) and blackFirst
+    val cnf1MaybeSolution = PuzzleSolver.findSolutionAssignments(cnf1)
+    assertTrue("CNF1 is valid", cnf1MaybeSolution.nonEmpty)
+    val cnf1Solution = cnf1MaybeSolution.get
+    assertTrue("Texas is at First", cnf1Solution contains (texasFirst->true))
+
+    // Black is at First, Texas is not at First, Black implies Texas is not valid
+    val cnf2 = (Black implies Texas) and blackFirst and texasFirst.negated
+    val cnf2MaybeSolution = PuzzleSolver.findSolutionAssignments(cnf2)
+    assertTrue("Black implies Texas is not valid", cnf2MaybeSolution.isEmpty)
   }
 
   def testAttrIff(): Unit = {
+    val blackFirst = Sym(First, Black)
+    val texasFirst = Sym(First, Texas)
 
+    // Black Iff Texas and Black is at First
+    val cnf1 = (Black iff Texas) and blackFirst
+    val cnf1MaybeSolution = PuzzleSolver.findSolutionAssignments(cnf1)
+    assertTrue("CNF1 is valid", cnf1MaybeSolution.nonEmpty)
+    val cnf1Solution = cnf1MaybeSolution.get
+    assertTrue("Texas is at First", cnf1Solution contains (texasFirst->true))
+
+    // Black Iff Texas and Black is not at First
+    val cnf2 = (Black iff Texas) and blackFirst.negated
+    val cnf2MaybeSolution = PuzzleSolver.findSolutionAssignments(cnf2)
+    assertTrue("CNF2 is valid", cnf2MaybeSolution.nonEmpty)
+    val cnf2Solution = cnf2MaybeSolution.get
+    assertTrue("Texas is not at First", cnf2Solution contains texasFirst->false)
+
+    // Black Iff Texas and Texas is at First
+    val cnf3 = (Black iff Texas) and texasFirst
+    val cnf3MaybeSolution = PuzzleSolver.findSolutionAssignments(cnf3)
+    assertTrue("CNF3 is valid", cnf3MaybeSolution.nonEmpty)
+    val cnf3Solution = cnf3MaybeSolution.get
+    assertTrue("Black is not at First", cnf3Solution contains blackFirst->true)
+
+    // Black Iff Texas and Texas is not at First
+    val cnf4 = (Black iff Texas) and texasFirst.negated
+    val cnf4MaybeSolution = PuzzleSolver.findSolutionAssignments(cnf4)
+    assertTrue("CNF4 is valid", cnf4MaybeSolution.nonEmpty)
+    val cnf4Solution = cnf4MaybeSolution.get
+    assertTrue("Texas is not at First", cnf4Solution contains blackFirst->false)
   }
 
   // TODO: Write tests for the other methods you implement in PuzzleDSL.scala
@@ -138,23 +194,35 @@ case class PuzzleDSLTest(name: String) extends TestCase(name) {
     val yJustBehindX = Arizona.justBehind(California)
     val xAtFirst = Sym(First, California)
     val yAtSecond = Sym(Second, Arizona)
-    val cnf = yJustBehindX and xAtFirst
-    val solution = PuzzleSolver.findSolutionAssignments(cnf).get
-    assertTrue("California is at first", solution contains(xAtFirst -> true))
-    assertTrue("Arizona is just behind California", solution contains(yAtSecond -> true))
+
+    // X is at first and Y is just behind X
+    val cnf1 = yJustBehindX and xAtFirst
+    val solution1 = PuzzleSolver.findSolutionAssignments(cnf1).get
+    assertTrue("Y is at second", solution1 contains(yAtSecond -> true))
+
+    // Y is at Second and Y is just behind X
+    val cnf2 = yJustBehindX and yAtSecond
+    val solution2 = PuzzleSolver.findSolutionAssignments(cnf2).get
+    assertTrue("X is at First", solution2 contains (xAtFirst -> true))
   }
 
   def testBehind(): Unit = {
-    val yBehindX = Arizona.behind(California)
-    val xAtFirst = Sym(First, California)
+    val yBehindX = Arizona behind California
+    val xAtSecond = Sym(Second, California)
+    val yAtFirst = Sym(First, Arizona)
     val yAtSecond = Sym(Second, Arizona)
-    val yAtThird = Sym(Third, Arizona)
-    val yAtFourth = Sym(Fourth, Arizona)
-    val yAtFifth = Sym(Fifth, Arizona)
-    val cnf1 = yBehindX and xAtFirst
-    val solution = PuzzleSolver.findSolutionAssignments(cnf1).get
-    assertTrue("California is at first", solution contains(xAtFirst -> true))
-    assertTrue("Arizona is behind California", (solution contains(yAtSecond -> true)) ||
-      (solution contains(yAtThird -> true)) || (solution contains(yAtFourth -> true)) || (solution contains(yAtFifth -> true)))
+
+
+    // Y is at first, X is at Second, y is behind x
+    val cnf1 = yBehindX and yAtFirst and xAtSecond
+    val cnf1MaybeSolution = PuzzleSolver.findSolutionAssignments(cnf1)
+    assertTrue("Y behind X is not valid", cnf1MaybeSolution.isEmpty)
+
+    val cnf2 = yBehindX and yAtSecond
+    val cnf2MaybeSolution = PuzzleSolver.findSolutionAssignments(cnf2)
+    assertTrue("CNF2 is valid", cnf2MaybeSolution.nonEmpty)
+    val xAtFirst = Sym(First, California)
+    val cnf2Solution = cnf2MaybeSolution.get
+    assertTrue("X is at first", cnf2Solution contains (xAtFirst->true))
   }
 }
