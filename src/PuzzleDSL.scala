@@ -157,8 +157,10 @@ abstract class PuzzleAttribute {
   def justBehind(that: PuzzleAttribute): CNF = {
     // Hint: This one is a bit more complex than the previous operators.
     // Think about all possible relative positions, and which are valid here.
-    (Sym(Second, this) iff Sym(First, that)) and (Sym(Third, this) iff Sym(Second, that)) and
-      (Sym(Fourth, this) iff Sym(Third, that)) and (Sym(Fifth, this) iff Sym(Fourth, that))
+    (Sym(Second, this) iff Sym(First, that)) and
+      (Sym(Third, this) iff Sym(Second, that)) and
+      (Sym(Fourth, this) iff Sym(Third, that)) and
+      (Sym(Fifth, this) iff Sym(Fourth, that))
   }
 
   /**
@@ -175,6 +177,5 @@ abstract class PuzzleAttribute {
       (Sym(Fourth, this) iff Sym(Second, that)) and (Sym(Fourth, this) iff Sym(Third, that)) and
       (Sym(Fifth, this) iff Sym(First, that)) and (Sym(Fifth, this) iff Sym(Second, that)) and
       (Sym(Fifth, this) iff Sym(Third, that)) and (Sym(Fifth, this) iff Sym(Fourth, that))
-
   }
 }
