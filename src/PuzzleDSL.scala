@@ -59,8 +59,8 @@ abstract class Literal extends Clause {
   def negated: Literal = {
     // Hint: Use a match expression. The `symbol` method may help too.
     this match {
-      case Not(this.symbol) => this.symbol
-      case _ => Not(this.symbol)
+      case Not(symbol) => symbol
+      case Sym(_, _) => Not(this.symbol)
     }
   }
 
@@ -71,8 +71,8 @@ abstract class Literal extends Clause {
   def truth: Boolean = {
     // Hint: Use a match expression.
     this match {
-      case Not(this.symbol) => false
-      case _ => true
+      case Not(_) => false
+      case Sym(_, _) => true
     }
   }
 }
@@ -128,7 +128,8 @@ abstract class PuzzleAttribute {
    * This method should be used as a helper to implement the implies method below.
    * You should not call this method directly in your constraint definitions.
    */
-  def impliesAt(position: Position, that: PuzzleAttribute): CNF = ???
+  def impliesAt(position: Position, that: PuzzleAttribute): CNF =
+    Sym(position, this) implies Sym(position, that)
 
   /**
    * Material implication operator for two attributes at the same position,
@@ -136,14 +137,17 @@ abstract class PuzzleAttribute {
    */
   def implies(that: PuzzleAttribute): CNF = {
     // Hint: Use impliesAt for all five positions.
-    ???
+    impliesAt(First, that) and impliesAt(Second, that) and
+      impliesAt(Third, that) and impliesAt(Fourth, that) and impliesAt(Fifth, that)
   }
 
   /**
    * Material biconditional operator for two attributes at the same position,
    * asserted for all five positions.
    */
-  def iff(that: PuzzleAttribute): CNF = ???
+  def iff(that: PuzzleAttribute): CNF = {
+    this.implies(that) and that.implies(this)
+  }
 
   /**
    * Ordering operator for two attributes,
@@ -153,7 +157,8 @@ abstract class PuzzleAttribute {
   def justBehind(that: PuzzleAttribute): CNF = {
     // Hint: This one is a bit more complex than the previous operators.
     // Think about all possible relative positions, and which are valid here.
-    ???
+    (Sym(Second, this) iff Sym(First, that)) and (Sym(Third, this) iff Sym(Second, that)) and
+      (Sym(Fourth, this) iff Sym(Third, that)) and (Sym(Fifth, this) iff Sym(Fourth, that))
   }
 
   /**
@@ -165,6 +170,11 @@ abstract class PuzzleAttribute {
   def behind(that: PuzzleAttribute): CNF = {
     // Hint: This one is a bit more complex than justBehind,
     // but you can use the same general strategy.
-    ???
+    (Sym(Second, this) iff Sym(First, that)) and (Sym(Third, this) iff Sym(First, that)) and
+      (Sym(Third, this) iff Sym(Second, that)) and (Sym(Fourth, this) iff Sym(First, that)) and
+      (Sym(Fourth, this) iff Sym(Second, that)) and (Sym(Fourth, this) iff Sym(Third, that)) and
+      (Sym(Fifth, this) iff Sym(First, that)) and (Sym(Fifth, this) iff Sym(Second, that)) and
+      (Sym(Fifth, this) iff Sym(Third, that)) and (Sym(Fifth, this) iff Sym(Fourth, that))
+
   }
 }

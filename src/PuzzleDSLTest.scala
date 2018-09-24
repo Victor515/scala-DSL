@@ -40,5 +40,27 @@ case class PuzzleDSLTest(name: String) extends TestCase(name) {
   }
 
   // TODO: Write tests for the other methods you implement in PuzzleDSL.scala
+  def testJustBehind(): Unit = {
+    val yJustBehindX = Arizona.justBehind(California)
+    val xAtFirst = Sym(First, California)
+    val yAtSecond = Sym(Second, Arizona)
+    val cnf = yJustBehindX and xAtFirst
+    val solution = PuzzleSolver.findSolutionAssignments(cnf).get
+    assertTrue("California is at first", solution contains(xAtFirst -> true))
+    assertTrue("Arizona is just behind California", solution contains(yAtSecond -> true))
+  }
 
+  def testBehind(): Unit = {
+    val yBehindX = Arizona.behind(California)
+    val xAtFirst = Sym(First, California)
+    val yAtSecond = Sym(Second, Arizona)
+    val yAtThird = Sym(Third, Arizona)
+    val yAtFourth = Sym(Fourth, Arizona)
+    val yAtFifth = Sym(Fifth, Arizona)
+    val cnf = yBehindX and xAtFirst
+    val solution = PuzzleSolver.findSolutionAssignments(cnf).get
+    assertTrue("California is at first", solution contains(xAtFirst -> true))
+    assertTrue("Arizona is behind California", (solution contains(yAtSecond -> true)) ||
+      (solution contains(yAtThird -> true)) || (solution contains(yAtFourth -> true)) || (solution contains(yAtFifth -> true)))
+  }
 }

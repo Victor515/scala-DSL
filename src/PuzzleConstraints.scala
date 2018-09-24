@@ -77,6 +77,7 @@ object PuzzleConstraints {
    */
   def solution: Option[Solution] = PuzzleSolver.findSolution(constraints)
 
+
   /**
    * Returns the position of the car with Texas plates in the provided solution.
    * Will throw an Exception if the car is not found in the solution
