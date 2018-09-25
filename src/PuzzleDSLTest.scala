@@ -142,7 +142,6 @@ case class PuzzleDSLTest(name: String) extends TestCase(name) {
     val blackFirst = Sym(First, Black)
     val texasFirst = Sym(First, Texas)
 
-
     // Black implies Texas and Black is at First
     val cnf1 = (Black implies Texas) and blackFirst
     val cnf1MaybeSolution = PuzzleSolver.findSolutionAssignments(cnf1)
@@ -150,7 +149,7 @@ case class PuzzleDSLTest(name: String) extends TestCase(name) {
     val cnf1Solution = cnf1MaybeSolution.get
     assertTrue("Texas is at First", cnf1Solution contains (texasFirst->true))
 
-    // Black is at First, Texas is not at First, Black implies Texas is not valid
+    // Black is at First, Texas is not at First, Black implies Texas
     val cnf2 = (Black implies Texas) and blackFirst and texasFirst.negated
     val cnf2MaybeSolution = PuzzleSolver.findSolutionAssignments(cnf2)
     assertTrue("Black implies Texas is not valid", cnf2MaybeSolution.isEmpty)
