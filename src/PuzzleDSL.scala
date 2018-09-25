@@ -146,7 +146,7 @@ abstract class PuzzleAttribute {
    * asserted for all five positions.
    */
   def iff(that: PuzzleAttribute): CNF = {
-    this.implies(that) and that.implies(this)
+    (this implies that) and (that implies this)
   }
 
   /**
@@ -157,8 +157,9 @@ abstract class PuzzleAttribute {
   def justBehind(that: PuzzleAttribute): CNF = {
     // Hint: This one is a bit more complex than the previous operators.
     // Think about all possible relative positions, and which are valid here.
-    (Sym(First, this).negated) and
-      (Sym(Fifth, that).negated) and
+
+    // Four possibilities: (1) this at second, that at first (2) this at third, that at second
+    // (3) this at fourth, that at third (4) this at fifth, that at fourth
       (Sym(Second, this) iff Sym(First, that)) and
       (Sym(Third, this) iff Sym(Second, that)) and
       (Sym(Fourth, this) iff Sym(Third, that)) and
@@ -174,10 +175,14 @@ abstract class PuzzleAttribute {
   def behind(that: PuzzleAttribute): CNF = {
     // Hint: This one is a bit more complex than justBehind,
     // but you can use the same general strategy.
-    (Sym(First, this).negated) and (Sym(Fifth, that).negated) and
+
       (Sym(Second, this) implies Sym(First, that)) and
       (Sym(Third, this) implies (Sym(First, that) or Sym(Second, that))) and
       (Sym(Fourth, this) implies (Sym(First, that) or Sym(Second, that) or Sym(Third, that))) and
-      (Sym(Fifth, this) implies (Sym(First, that) or Sym(Second, that) or Sym(Third, that) or Sym(Fourth, that)))
+      (Sym(Fifth, this) implies (Sym(First, that) or Sym(Second, that) or Sym(Third, that) or Sym(Fourth, that))) and
+        (Sym(Fourth, that) implies Sym(Fifth, this)) and
+        (Sym(Third, that) implies (Sym(Fourth, this) or Sym(Fifth, this))) and
+        (Sym(Second, that) implies (Sym(Third, this) or Sym(Fourth, this) or Sym(Fifth, this))) and
+        (Sym(First, that) implies (Sym(Second, this) or Sym(Third, this) or Sym(Fourth, this) or Sym(Fifth, this)))
   }
 }
